@@ -38,21 +38,27 @@
 include '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_cliente = $_POST['id_cliente'];
-    $id_funcionario = $_POST['id_funcionario'];
-    $descricao_problema = $_POST['descricao'];
-    $urgencia = $_POST['urgencia'];
-    $status = $_POST['status'];
-    $data_abertura = $_POST['data'];
+    $id_cliente = isset($_POST['id_cliente']) ? (int) $_POST['id_cliente'] : null;
+    $id_funcionario = isset($_POST['id_funcionario']) ? (int) $_POST['id_funcionario'] : null;
+    $descricao_problema = isset($_POST['descricao']) ? $_POST['descricao'] : '';
+    $urgencia = isset($_POST['urgencia']) ? $_POST['urgencia'] : '';
+    $status = isset($_POST['status']) ? $_POST['status'] : '';
+    $data_abertura = isset($_POST['data']) ? $_POST['data'] : '';
 
+    if (!$id_cliente || !$id_funcionario || empty($descricao_problema) || empty($data_abertura)) {
+        echo "Todos os campos obrigatórios devem ser preenchidos!";
+        exit;
+    }
+    
     $sql = "INSERT INTO solicitacao (descricao, urgencia, status, data_abertura, id_funcionario, id_cliente) 
-            VALUES ('$descricao_problema', '$urgencia', '$status', '$data_abertura', '$id_funcionario', '$id_cliente')";
+            VALUES ('$descricao_problema', '$urgencia', '$status', '$data_abertura', $id_funcionario, $id_cliente)";
 
     if ($conn->query($sql) === TRUE) {
         header("Location: ?success=1");
         exit;
     } else {
-        echo "Erro ao cadastrar solicitacao: " . $conn->error;
+        echo "Deu ruim: " . $conn->error;
     }
 }
+
 ?>
